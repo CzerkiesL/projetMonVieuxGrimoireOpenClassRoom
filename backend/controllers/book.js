@@ -1,5 +1,7 @@
 const fs = require('fs')
 const Book = require('../models/Book')
+const { error } = require('console')
+
 
 exports.getAllBooks = (req, res, next) => {
     Book.find()
@@ -77,5 +79,28 @@ exports.deleteBook = (req, res, next) => {
 }
 
 exports.rateBook = (req, res, next) => {
-    
+    Book.findOne({ _id: req.params.id })
+        .then(book => {            
+            if (book.ratings.includes(req.auth.userId)) {
+                res.status(401).json({ message: 'Note deja attribué !' })
+            } else {
+                Book.updateOne({ _id: req.params.id }, {$push: {ratings: {userId: req.auth.userId, grade: req.body.rating}} })
+                    .then(() =>  {
+                        Book.findOne({ _id: req.params.id })
+                            .then(book => {
+                                const average = book.ratings.reduce((acc, curr) => acc + curr.grade, 0) / book.ratings.length
+                                Book.updateOne({ _id: req.params.id }, {averageRating: average.toFixed(2)})
+                                    .then(() => {
+                                        Book.findOne({_id: req.params.id})
+                                            .then(book => res.status(200).json( book ))
+                                            .catch(error => res.status(400).json({ error }))
+                                    })
+                                    .catch(error => res.status(500).json({ error }))
+                            })
+                            .catch(error => res.status(401).json({ error }))
+                    })
+                    .catch(error => res.status(401).json({ error }))
+            }
+        })
+        .catch(error => res.status(500).json({ error }))
 }
