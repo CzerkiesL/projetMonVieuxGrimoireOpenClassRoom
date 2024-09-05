@@ -20,7 +20,7 @@ exports.signUp = (req, res, next) => {
             })
             .catch(error => res.status(500).json({ error }))
     } else {
-        res.status(401).json({ message: 'Veuillez utilisé un email valide !' })
+        res.status(400).json({ message: 'Veuillez utilisé un email valide !' })
     }
 };
 
@@ -28,7 +28,7 @@ exports.signIn = (req, res, next) => {
     User.findOne({ email: req.body.email})
         .then(user => {
             if (!user) {
-                return res.status(401).json({ message: 'paire email/mot de passe incorrecte'})
+                return res.status(400).json({ message: 'paire email/mot de passe incorrecte'})
             }
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
@@ -44,7 +44,7 @@ exports.signIn = (req, res, next) => {
                         ),
                     })
                 })
-                .catch(error => res.status(500).json({ error }))
+                .catch(error => res.status(400).json({ error }))
         })
         .catch(error => res.status(500).json({ error }))
 }
