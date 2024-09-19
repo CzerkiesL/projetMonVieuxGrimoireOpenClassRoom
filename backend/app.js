@@ -8,7 +8,7 @@ const bookRoutes = require('./routes/book')
 
 const app = express()
 
-mongoose.connect("mongodb+srv://czerkiesludovic:aENu3mtt7w98xscr@monvieuxgrimoire.qjopu.mongodb.net/?retryWrites=true&w=majority&appName=monVieuxGrimoire")
+mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@monvieuxgrimoire.qjopu.mongodb.net/?retryWrites=true&w=majority&appName=monVieuxGrimoire`)
 .then(() => console.log('Connexion réussie !'))
 .catch(() => console.log('Connexion échouée !'))
 
